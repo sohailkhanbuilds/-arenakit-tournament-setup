@@ -1,23 +1,26 @@
-# ArenaKit Tournament Setup Demo
+# ArenaKit — tournament setup toolkit
 
-Static demo for esports organisers: event landing page, configurable registration link, and sample leaderboard.
+ArenaKit is a static GitHub Pages MVP for an esports tournament setup service. It includes a sales landing page, multiple sample event pages, per-event sample leaderboards, and a local organizer workspace prototype.
 
-## Run locally
-Open `index.html` in a browser, or run `python -m http.server 8000` and visit `http://localhost:8000`.
+## Pages
+- `index.html` — service landing page and intro offer
+- `events.html` — event demo gallery
+- `tournament.html?event=drop-zone-showdown` — reusable event template
+- `leaderboard.html?event=drop-zone-showdown` — per-event sample leaderboard
+- `organizer.html` — browser-local workspace prototype
 
-## Configure for a real organiser
-1. Create a Google Form owned by the organiser and link responses to an organiser-owned Google Sheet.
-2. Set `registrationUrl` in `assets/config.js` to the public form URL.
-3. Replace fictional event details in `index.html` and fictional rows in `assets/leaderboard.js` with verified results.
-4. Test form submission, Sheet response, mobile layout, and results before launch.
-5. Keep demo labels until all sample content is replaced and the organiser approves the page.
+## Configure an event
+Edit `assets/config.js`. Add an object to `events` with a unique `id`, event details, rules, a real `registrationUrl` (for example a Google Form URL), `leaderboardUrl`, and scores. Then share the matching URL:
+- `/tournament.html?event=YOUR-EVENT-ID`
+- `/leaderboard.html?event=YOUR-EVENT-ID`
 
-## Limitations
-- Static demo only; no database, admin login, or multi-user SaaS backend.
-- Registration data goes to the configured external form, not this site.
-- Leaderboard is hard-coded and does not sync live with Google Sheets.
-- Never put passwords, private room IDs, player phone numbers, or API keys in public files.
-- No entry fees or prize money are handled by this demo.
+Before sharing with players, replace sample names, dates, rules, prize details and scores. Do not imply that demo events are real.
 
-## Hosting
-Can be hosted on GitHub Pages or Netlify. Hosting must be enabled in the repository/account. Verify the live URL after deployment.
+## Deploy with GitHub Pages
+Repository Settings → Pages → Build and deployment → Source: **Deploy from a branch** → Branch: `main` → Folder: `/(root)` → Save. This project is plain HTML/CSS/JavaScript and does not need a build step.
+
+## Important MVP limitations
+This repository is a **static front-end prototype**, not a complete multi-tenant SaaS. The organizer workspace saves data only in the current browser's localStorage. It has no login, shared database, server-side registration storage, permissions, live Google Sheets sync, payment processing or automatic result ingestion. A Google Form link can collect entries in the organiser's own form; connect and test it before the event. To provide real multi-client accounts and private data, add a backend/database or a properly secured Google Apps Script integration before using it as a production system.
+
+## Intro offer displayed
+₹2,500 per event setup is an introductory service offer, not a guarantee of revenue. Scope and any third-party costs should be agreed with each organiser first.
