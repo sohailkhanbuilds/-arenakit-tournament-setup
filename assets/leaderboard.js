@@ -1,0 +1,4 @@
+// Fictional demonstration scores. Replace with verified event results before use.
+const rows=[{team:"Night Owls",wins:1,elims:18,placement:25},{team:"Pixel Raiders",wins:1,elims:15,placement:22},{team:"Zone Breakers",wins:0,elims:19,placement:16},{team:"Clutch Crew",wins:0,elims:14,placement:17},{team:"Drop Masters",wins:0,elims:12,placement:15},{team:"Last Circle",wins:0,elims:9,placement:12}].map(r=>({...r,total:r.elims+r.placement})).sort((a,b)=>b.total-a.total||b.wins-a.wins||b.elims-a.elims);
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+const body=document.getElementById("leaderboardBody");if(body)body.innerHTML=rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td><b>'+esc(r.team)+'</b></td><td>'+r.wins+'</td><td>'+r.elims+'</td><td>'+r.placement+'</td><td><strong>'+r.total+'</strong></td></tr>').join("");
