@@ -1,4 +1,11 @@
-// Fictional demonstration scores. Replace with verified event results before use.
-const rows=[{team:"Night Owls",wins:1,elims:18,placement:25},{team:"Pixel Raiders",wins:1,elims:15,placement:22},{team:"Zone Breakers",wins:0,elims:19,placement:16},{team:"Clutch Crew",wins:0,elims:14,placement:17},{team:"Drop Masters",wins:0,elims:12,placement:15},{team:"Last Circle",wins:0,elims:9,placement:12}].map(r=>({...r,total:r.elims+r.placement})).sort((a,b)=>b.total-a.total||b.wins-a.wins||b.elims-a.elims);
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-const body=document.getElementById("leaderboardBody");if(body)body.innerHTML=rows.map((r,i)=>'<tr><td>'+(i+1)+'</td><td><b>'+esc(r.team)+'</b></td><td>'+r.wins+'</td><td>'+r.elims+'</td><td>'+r.placement+'</td><td><strong>'+r.total+'</strong></td></tr>').join("");
+(() => {
+  const config = window.ARENAKIT_CONFIG || { events: [] };
+  const params = new URLSearchParams(location.search);
+  const events = config.events || [];
+  const event = events.find(item => item.id === params.get("event")) || events[0];
+  const root = document.getElementById("leaderboard-root");
+  const esc = value => String(value ?? "").replace(/[&<>"']/g, char => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[char]));
+  if (!root || !event) return;
+  const sorted = [...(event.scores || [])].sort((a, b) => (b.placement + b.kills) - (a.placement + a.kills));
+  root.innerHTML = `<div class="page-intro"><div class="eyebrow">RESULTS CENTER · ${esc(event.game)}</div><h1>${esc(event.name)}<br><span class="gradient-text">Leaderboard.</span></h1><p>Sample standings for the demo template. Points shown are illustrative, not official results.</p></div><section class="panel leaderboard-panel"><div class="leaderboard-top"><div><span class="eyebrow">STANDINGS</span><h2>Team rankings</h2></div><a class="btn btn-ghost btn-small" href="tournament.html?event=${encodeURIComponent(event.id)}">Event details ↗</a></div><div class="table-scroll"><table class="leaderboard-table"><thead><tr><th>RANK</th><th>TEAM</th><th>MATCHES</th><th>PLACEMENT PTS</th><th>KILLS</th><th>TOTAL*</th></tr></thead><tbody>${sorted.map((team, i) => `<tr><td><span class="rank rank-${i + 1}">${String(i + 1).padStart(2, "0")}</span></td><td><b>${esc(team.team)}</b></td><td>${esc(team.matches)}</td><td>${esc(team.placement)}</td><td>${esc(team.kills)}</td><td><b>${esc(team.placement + team.kills)}</b></td></tr>`).join("")}</tbody></table></div><p class="fine-print">* Demo total = placement points + kills. Configure scoring to match your actual tournament rules.</p></section><div class="event-switcher"><span class="muted">View another sample:</span>${events.map(item => `<a class="chip-link" href="leaderboard.html?event=${encodeURIComponent(item.id)}">${esc(item.name)}</a>`).join("")}</div>`;
+})();
