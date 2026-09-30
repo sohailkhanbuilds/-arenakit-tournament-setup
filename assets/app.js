@@ -76,9 +76,14 @@
           const rows = await api("/api/organizer/tournaments/" + id + "/registrations");
           holder.innerHTML = rows.length ? rows.map(r => `<div class="managed-event"><div><b>${escape(r.team_name)}</b><p>${escape(r.captain_name)} · ${escape(r.email)} · ${escape(r.contact)}</p><span class="muted small">Status: ${escape(r.status)}</span></div><select data-status="${r.id}" aria-label="Registration status"><option ${r.status==="pending"?"selected":""}>pending</option><option ${r.status==="approved"?"selected":""}>approved</option><option ${r.status==="rejected"?"selected":""}>rejected</option><option ${r.status==="waitlisted"?"selected":""}>waitlisted</option></select></div>`).join("") : '<p>No registrations yet.</p>';
         }
-        const select = ev.target.closest("[data-status]");
-        if (select) { await api("/api/organizer/registrations/" + select.dataset.status, {method:"PATCH", body:JSON.stringify({status:select.value})}); }
+
       } catch(err) { alert(err.message); }
+    });
+    list.addEventListener("change", async ev => {
+      const select = ev.target.closest("[data-status]");
+      if (!select) return;
+      try { await api("/api/organizer/registrations/" + select.dataset.status, {method:"PATCH", body:JSON.stringify({status:select.value})}); }
+      catch(err) { alert(err.message); }
     });
   }
 })();
