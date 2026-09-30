@@ -1,11 +1,12 @@
 (() => {
-  const config = window.ARENAKIT_CONFIG || { events: [] };
-  const params = new URLSearchParams(location.search);
-  const events = config.events || [];
-  const event = events.find(item => item.id === params.get("event")) || events[0];
-  const root = document.getElementById("leaderboard-root");
-  const esc = value => String(value ?? "").replace(/[&<>"']/g, char => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[char]));
-  if (!root || !event) return;
-  const sorted = [...(event.scores || [])].sort((a, b) => (b.placement + b.kills) - (a.placement + a.kills));
-  root.innerHTML = `<div class="page-intro"><div class="eyebrow">RESULTS CENTER · ${esc(event.game)}</div><h1>${esc(event.name)}<br><span class="gradient-text">Leaderboard.</span></h1><p>Sample standings for the demo template. Points shown are illustrative, not official results.</p></div><section class="panel leaderboard-panel"><div class="leaderboard-top"><div><span class="eyebrow">STANDINGS</span><h2>Team rankings</h2></div><a class="btn btn-ghost btn-small" href="tournament.html?event=${encodeURIComponent(event.id)}">Event details ↗</a></div><div class="table-scroll"><table class="leaderboard-table"><thead><tr><th>RANK</th><th>TEAM</th><th>MATCHES</th><th>PLACEMENT PTS</th><th>KILLS</th><th>TOTAL*</th></tr></thead><tbody>${sorted.map((team, i) => `<tr><td><span class="rank rank-${i + 1}">${String(i + 1).padStart(2, "0")}</span></td><td><b>${esc(team.team)}</b></td><td>${esc(team.matches)}</td><td>${esc(team.placement)}</td><td>${esc(team.kills)}</td><td><b>${esc(team.placement + team.kills)}</b></td></tr>`).join("")}</tbody></table></div><p class="fine-print">* Demo total = placement points + kills. Configure scoring to match your actual tournament rules.</p></section><div class="event-switcher"><span class="muted">View another sample:</span>${events.map(item => `<a class="chip-link" href="leaderboard.html?event=${encodeURIComponent(item.id)}">${esc(item.name)}</a>`).join("")}</div>`;
+ const API=(window.ARENAKIT_CONFIG||{}).apiBase||"https://arenakit-api.onrender.com";
+ const id=Number(new URLSearchParams(location.search).get("id"));
+ const root=document.getElementById("leaderboard-root");
+ const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+ if(!root)return;
+ if(!Number.isInteger(id)||id<1){root.innerHTML='<div class="empty-state">Open a tournament first, then choose its leaderboard.</div>';return;}
+ fetch(API+"/api/tournaments/"+id+"/leaderboard").then(async r=>{const d=await r.json();if(!r.ok)throw new Error(d.error||"Could not load leaderboard");return d;}).then(d=>{
+ const rows=d.standings||[];
+ root.innerHTML=`<div class="page-intro"><div class="eyebrow">LIVE RESULTS · ${esc(d.tournament.game)}</div><h1>${esc(d.tournament.name)}<br><span class="gradient-text">Leaderboard.</span></h1><p>Standings are calculated from match results entered by the tournament organiser.</p></div><section class="panel leaderboard-panel"><div class="leaderboard-top"><div><span class="eyebrow">STANDINGS</span><h2>Team rankings</h2></div><a class="btn btn-ghost btn-small" href="tournament.html?id=${id}">Event details ↗</a></div><div class="table-scroll"><table class="leaderboard-table"><thead><tr><th>RANK</th><th>TEAM</th><th>MATCHES</th><th>PLACEMENT PTS</th><th>KILLS</th><th>TOTAL</th></tr></thead><tbody>${rows.length?rows.map((r,i)=>`<tr><td><span class="rank rank-${i+1}">${String(i+1).padStart(2,"0")}</span></td><td><b>${esc(r.team)}</b></td><td>${r.matches}</td><td>${r.placement_points}</td><td>${r.kills}</td><td><b>${r.total}</b></td></tr>`).join(""):'<tr><td colspan="6">No match scores entered yet.</td></tr>'}</tbody></table></div><p class="fine-print">${esc(d.scoring)}</p></section>`;
+ }).catch(e=>root.innerHTML='<div class="notice notice-warn"><b>Could not load leaderboard</b><span>'+esc(e.message)+'</span></div>');
 })();
