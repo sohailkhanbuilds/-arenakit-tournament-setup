@@ -14,7 +14,9 @@ app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": os.getenv("CORS_ORIGINS", "*")}})
 database_url = os.getenv("DATABASE_URL", "").strip()
 if database_url.startswith("postgres://"):
-    database_url = database_url.replace("postgres://", "postgresql://", 1)
+    database_url = database_url.replace("postgres://", "postgresql+psycopg://", 1)
+elif database_url.startswith("postgresql://"):
+    database_url = database_url.replace("postgresql://", "postgresql+psycopg://", 1)
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url or "sqlite:///arenakit-dev.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["JWT_SECRET"] = os.getenv("JWT_SECRET", "")
