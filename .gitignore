@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# Local databases and runtime data
+*.db
+*.sqlite
+*.sqlite3
+backend/instance/
+
+# Test/cache/build output
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
